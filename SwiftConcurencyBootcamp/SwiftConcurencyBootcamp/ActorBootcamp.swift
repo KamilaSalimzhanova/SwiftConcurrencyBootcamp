@@ -8,6 +8,20 @@
 import SwiftUI
 import Combine
 
+actor MyActorDataManager {
+    static let shared = MyActorDataManager()
+    
+    private init() {}
+    
+    var data: [String] = []
+    
+    func getRandData() -> String? {
+        self.data.append(UUID().uuidString)
+        print("Current thread \(Thread.current)")
+        return self.data.randomElement()
+    }
+}
+
 final class MyDataManager {
     static let shared = MyDataManager()
     
@@ -55,7 +69,7 @@ struct HomeView: View {
 struct BrowseView: View {
     @State private var text: String = ""
     
-    private let manager = MyDataManager.shared
+    private let manager = MyActorDataManager.shared
     private let timer = Timer.publish(every: 0.1, on: .main, in: .common).autoconnect()
     
     var body: some View {
@@ -66,14 +80,13 @@ struct BrowseView: View {
                 .font(.headline)
         }
         .onReceive(timer) { _ in
-            DispatchQueue.global(qos: .background).async {
-                manager.getRandData { title in
-                    if let title {
-                        DispatchQueue.main.async {
-                            self.text = title
-                        }
+            Task {
+                let title = await manager.getRandData()
+                if let title {
+                    await MainActor.run {
+                        text = title
                     }
-                 }
+                }
             }
         }
     }
