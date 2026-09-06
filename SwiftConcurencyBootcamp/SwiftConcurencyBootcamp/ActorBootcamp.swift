@@ -53,15 +53,15 @@ struct HomeView: View {
                 .font(.headline)
         }
         .onReceive(timer) { _ in
-            DispatchQueue.global(qos: .background).async {
-                manager.getRandData { title in
-                    if let title {
-                        DispatchQueue.main.async {
-                            self.text = title
-                        }
-                    }
-                 }
-            }
+//            DispatchQueue.global(qos: .background).async {
+//                manager.getRandData { title in
+//                    if let title {
+//                        DispatchQueue.main.async {
+//                            self.text = title
+//                        }
+//                    }
+//                 }
+//            }
         }
     }
 }
@@ -80,14 +80,14 @@ struct BrowseView: View {
                 .font(.headline)
         }
         .onReceive(timer) { _ in
-            Task {
-                let title = await manager.getRandData()
-                if let title {
-                    await MainActor.run {
-                        text = title
-                    }
-                }
-            }
+//            Task {
+//                let title = await manager.getRandData()
+//                if let title {
+//                    await MainActor.run {
+//                        text = title
+//                    }
+//                }
+//            }
         }
     }
 }
